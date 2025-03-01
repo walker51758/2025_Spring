@@ -22,9 +22,9 @@ Statistical, or econometric,  inference about the slope entails
 
 - Estimation:
   - How should we draw a line through the data to estimate the  population slope？
-    - Answer: ordinary least squares (OLS).
-  - Hypothesis testing
-  - Confidence intervals (置信区间)
+    - Answer: ordinary least squares (OLS, 最小二乘法).
+- Hypothesis testing
+- Confidence intervals (置信区间)
 
 $$
 Y_i = \beta_0 + \beta_1X_i + u_i, i = 1, ...,n
