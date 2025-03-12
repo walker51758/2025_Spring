@@ -122,3 +122,25 @@ We have treated OLS as a way to draw a straight line through the data on $Y$ and
 ### 1.5 The Sampling Distribution
 
 The OLS estimator is computed from a sample of data. A different sample yields a different value of $\hat{\beta_1}$ This is the source of the "sampling uncertainty" of $\hat{\beta_1}$.
+
+If the three Least Squares Assumptions hold:
+
+1. $E(\hat{\beta_1}) = \beta_1$ and $E(\hat{\beta_0}) = \beta_0$. That is $\hat{\beta_1}$ and $\hat{\beta_0}$ are unbiased estimator of $\beta_1$ and $\beta_0$.
+
+2. $$
+   \sigma_{\hat{\beta}_1}^2 = \frac{1}{n} \frac{\text{var}[(X_i - \mu_X)u_i]}{[\text{var}(X_i)]^2}
+   $$
+
+   $$
+   \sigma_{\hat{\beta}_0}^2 = \frac{1}{n} \frac{\text{var}(H_i \mu_i)}{[E(H_i^2)]^2}, \text{ where } H_i = 1 - \left[\frac{\mu_X}{E(X_i^2)}\right] X_i.
+   $$
+
+   - This implies that OLS estimators are consistent - when the sample size is large, $\hat{\beta_1}$ and $\hat{\beta_0}$ will be close to the $\beta_1$ and $\beta_0$.
+
+   - The larger is the variance of $X_i$, the smaller is the variance of $\hat{\beta_1}$
+
+     <img src="image/2.png" style="zoom:50%;" />
+
+   - The smaller is the variance of the error $u_i$, the smaller is the variance of $\hat{\beta_1}$.
+
+     if the errors are smaller, then the data will have a tighter scatter around the population regression line, so its slope will be estimated more precisely.
