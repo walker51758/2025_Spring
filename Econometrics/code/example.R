@@ -119,3 +119,30 @@ data7 <- data7 %>%
   mutate(lntestscr=log(testscr))
 ll <- predict(lm(lntestscr~avginc, data = data7))
 points(data7$lntestscr, data7$avginc, col="pink",pch=1.5)
+
+logfit_curve <- function(x){
+  predict(lm(testscr ~ log(avginc), data = data7),
+          newdata = data.frame(avginc = x))
+}
+install.packages("haven")
+library(haven)
+model<-nls(
+  testscr~b0*(1-exp(-1*b1*(avginc-b2))),
+  data = data7,
+  start = list(b0=720,b1=0.1,b2=10),
+)
+summary(model)
+nonlfit_curve <- function(x){
+  predict(nls(
+    testscr ~ b0*(1-exp(-1*b1*(avginc-b2))),
+    data = data7,
+    start = list(b0=720,b1=0.2,b2=10)
+  ),
+  newdata = data.frame(avginc = x))
+}
+curve(nonlfit_curve(x), col = "green", lwd = 2, add = TRUE)
+install.packages("quantreg")
+library(quantreg)
+fit <- rq(testscr~avginc, tau = seq(0.1, 0.9, by = 0.1), data = data7)
+summary_fit <- summary(fit)
+plot(summary_fit, parm = "avginc", main = "coefficient")
