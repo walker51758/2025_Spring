@@ -141,8 +141,68 @@ nonlfit_curve <- function(x){
   newdata = data.frame(avginc = x))
 }
 curve(nonlfit_curve(x), col = "green", lwd = 2, add = TRUE)
+
+data7 <- rio::import("caschool.dta")
 install.packages("quantreg")
 library(quantreg)
+m2 <- rq(testscr ~avginc, tau=0.9, data = data7)
+summary(m2)
+
 fit <- rq(testscr~avginc, tau = seq(0.1, 0.9, by = 0.1), data = data7)
 summary_fit <- summary(fit)
 plot(summary_fit, parm = "avginc", main = "coefficient")
+
+setwd("C:/Users/Lenovo/Desktop/2025_Spring/Econometrics/code")
+data3 <- rio::import("wg88.dta")
+library(quantreg)
+fit <- rq( lgwg88c ~ schyear + asex + exper + expsq + cp + minor + 
+             ow2+ow3+ow4+ow5+
+             oc2+oc3+oc4+
+             sec1+sec3+sec4+sec5+sec6+sec7+sec8+sec9+sec10+sec11+sec12+
+             zprvn11+zprvn14+zprvn21++zprvn34+zprvn41+zprvn42+zprvn44+
+             zprvn53+zprvn62, tau = seq(0.1, 0.9, by = 0.1),data = data3)
+smmary_fit <- summary(fit)
+plot(summary_fit, parm = "schyear", main = "Coefficient for school year")
+
+install.packages("mgcv")
+library(mgcv)
+data3 <- rio::import("wg88.dta")
+nl2 <- gam(lgwg88c ~ schyear + asex + s(exper) + expsq + cp + minor + 
+             ow2+ow3+ow4+ow5+
+             oc2+oc3+oc4+
+             sec1+sec3+sec4+sec5+sec6+sec7+sec8+sec9+sec10+sec11+sec12+
+             zprvn11+zprvn14+zprvn21++zprvn34+zprvn41+zprvn42+zprvn44+
+             zprvn53+zprvn62,data = data3)
+plot(nl2)
+
+install.packages("car")
+library(car)
+data(UN)
+attach(UN)
+View(UN)
+colnames(UN)
+plot(ppgdp, infantMortality)
+plot(log(ppgdp), log(infantMortality))
+loglog.fit <- lm(I(log(infantMortality))~I(log(ppgdp)))
+curve(exp(coef(loglog.fit)[1]+coef(loglog.fit)[2]*log(x)),5,43000,add=T,col="red")
+poly5.fit <- lm(infantMortality ~ ppgdp + I(ppgdp^2) + I(ppgdp^3) + I(ppgdp^4) + I(ppgdp^5))
+plot(ppgdp, infantMortality)
+b0 <- coef(poly5.fit)[1]
+b1 <- coef(poly5.fit)[2]
+b2 <- coef(poly5.fit)[3]
+b3 <- coef(poly5.fit)[4]
+b4 <- coef(poly5.fit)[5]
+b5 <- coef(poly5.fit)[6]
+curve(b0+b1*x+b2*x^2+b3*x^3+b4*x^4+b5*x^5,4,43000,add=T,col="red")
+fit.jpw <- lm(infantMortality~1+ppgdp+I((ppgdp-1750)*(ppgdp>1750)))
+summary(fit.jpw)
+b.0 <- coef(fit.jpw)[1]
+b.1 <- coef(fit.jpw)[2]
+b.2 <- coef(fit.jpw)[3]
+x.0 <- seq(0, 1750,1)
+x.1 <- seq(1750,42000,1)
+y.0 <- b.0 + b.1*x.0
+y.1 <- (b.0+b.1*1750+(b.1+b.2)*x.1)
+plot(ppgdp, infantMortality,pch=16,cex=0.5)
+lines(x.0, y.0, col="red",lwd=2)
+lines(x.1, y.1, col="blue",lwd=2)
