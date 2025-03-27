@@ -206,3 +206,114 @@ y.1 <- (b.0+b.1*1750+(b.1+b.2)*x.1)
 plot(ppgdp, infantMortality,pch=16,cex=0.5)
 lines(x.0, y.0, col="red",lwd=2)
 lines(x.1, y.1, col="blue",lwd=2)
+
+install.packages("MultiKink")
+library(MultiKink)
+install.packages("splines")
+library(splines)
+install.packages("rms")
+library(rms)
+data("triceps")
+View(triceps)
+data_plot <- ggplot(data=triceps, aes(x=age, y=triceps))+
+  geom_point(alpha=0.55, col="black")+
+  theme_minimal()
+data_plot
+
+triceps <- triceps%>%
+  mutate(age5=I((age-5)^3),
+         age55=I((age-5)^3*(age<=5)))
+
+lm_unnatural <- lm(triceps~age + I(age^2) + I(age^3)+
+                     I((age-5)^3*(age>=5))+
+                     I((age-10)^3*(age>=10))+
+                   I((age-20)^3*(age>=20))+
+                   I((age-30)^3*(age>=30))+
+                   I((age-40)^3*(age>=40)),
+                   data = triceps
+                   )
+pred_unnatural <- predict(lm_unnatural)
+summary(lm_unnatural)
+data_plot + geom_line(data = triceps, aes(y=pred_unnatrual,x=age),lwd=1,col="blue")
+
+lm_half_natural <- lm(triceps~age +
+                        I((age-5)^3*(age>=5))+
+                        I((age-10)^3*(age>=10))+
+                        I((age-20)^3*(age>=20))+
+                        I((age-30)^3*(age>=30))+
+                        I((age-40)^3*(age>=40)),
+                      data = triceps
+                      )
+pred_half_natural <- predict(lm_half_natural)
+
+data_plot + 
+  geom_line(data=triceps,aes(y=pred_unnatrual,x=age),lwd=1,col="blue")+
+  geom_line(data=triceps,aes(y=pred_half_natural,x=age),lwd=1,col="red")
+
+model.full_natural <- ols(triceps ~ rcs(age,parms=c(5,10,20,30,40)),data = triceps)
+pred_full_natural <- predict(model.full_natural)
+
+data_plot + 
+  geom_line(data=triceps, aes(y=pred_unnatrual,x=age),size=1,col="blue")+
+  geom_line(data=triceps, aes(y=pred_half_natural, x=age),size=1,col="red")+
+  geom_line(data =triceps, aes(y= pred_full_natural,x=age),size=1,col="green")
+sk <- function(x,xi_k){
+  xi_1 <- 5
+  xi_K_1 <- 30
+  xi_K <- 40
+  dk <- ((x-xi_k)^3*(x>=xi_k)-(x-xi_K)^3 * (x>=xi_K))/(xi_K - xi_k)
+  dK_1 <- ((x-xi_K_1)^3*(x>=xi_K_1) - (x-xi_K)^3*(x>=xi_K))/(xi_K-xi_K_1)
+  sk <- (xi_K-xi_k)*(dk-dK_1)/(xi_K-xi_1)^2
+  return (sk)
+}
+s1 <- sk(triceps$age,5)
+s2 <- sk(triceps$age,10)
+s3 <- sk(triceps$age,20)
+triceps_new <- cbind(triceps,s1,s2,s3)
+head(triceps_new,100)
+spline_by_hand <- lm(triceps~age+s1+s2+s3, data=triceps)
+summary(model.full_natural)
+pred_spline_by_hand <- predict(spline_by_hand)
+spline.ns <- lm(triceps~ns(age, knots = c(5,10,20,30,40)), data = triceps)
+summary(spline.ns)
+pred_spline_ns <- predict(spline.ns)
+
+data_plot+
+  geom_line(data=triceps,
+            aes(y=pred_unnatural,x=age),lwd=1,col="blue")+
+  geom_line(data=triceps,
+            aes(y=pred_half_natural,x=age),lwd=1,col="red")+
+  geom_line(data=triceps,
+            aes(y=pred_full_natural,x=age),lwd=1,col="green")+
+  geom_line(data=triceps,
+            aes(y=pred_spline_by_hand,x=age),lwd=1,col="orange")+
+  geom_line(data=triceps,
+            aes(y=pred_spline_ns,x=age),lwd=1,col="pink")
+
+set.seed(123)
+n <- 100
+x <- seq(0,10,length.out=n)
+y <- sin(x) + rnorm(n, mean=0,sd=0.3)
+K <- 10
+knots <- seq(min(x), max(x), length.out=K+2)[-c(1,K+2)]
+boundary <- range(x)
+boundary
+h <- diff(boundary)
+h
+natural_spline_basis <- function(x,knots,boundary){
+  n <- length(x)
+  K <- length(knots)
+  a1 <- function(x)(boundary[2] - x)/h
+  a2 <- funtion(x)(x - boundary[1])/h
+  B <- matrix(0,n,K+2)
+  B[,1] <- a1(x)
+  B[,2] <- a2(x)
+  for(j in 1:K){
+    B[,j+2] < pmax(x-knots[j],0)^3-
+      a1(x)*pmax(boundary[1]-knots[j])^3-
+      a2(x)*pmax(boundary[2]-knots[j])^3
+  }
+  return(B)
+}
+B <- natural_spline_basis(x,knots,boundary)
+B
