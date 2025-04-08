@@ -316,4 +316,31 @@ natural_spline_basis <- function(x,knots,boundary){
   return(B)
 }
 B <- natural_spline_basis(x,knots,boundary)
-B
+B 
+
+install.packages("AER")
+install.packages("plm")
+install.packages("sandwich")
+library(AER)
+library(plm)
+library(sandwich)
+data("Fatalities")
+data2 <- pdata.frame(Fatalities, index = c("state", "year"))
+data2$fatal_rate <- data2$fatal / data2$pop * 10000
+data21982 <- subset(data2, year = "1982")
+data21988 <- subset(data2, year = "1988")
+fatal1982_mod <- lm(fatal_rate ~ beertax, data=data21982)
+fatal1988_mod <- lm(fatal_rate ~ beertax, data = data21988)
+coeftest(fatal1982_mod, vcov. = vcovHC, type="HC1")
+summary(fatal1982_mod)
+coeftest(fatal1988_mod, vcov. = vcovHC, type="HC1")
+par(mfrow = c(1,2))
+plot(x=as.double(data21982$beertax),
+     y = as.double(data21982$fatal_rate),
+     xlab = "Beer tax (in 1988 dollars)",
+     ylab = "fatality rate",
+     main = "Traffic Fatality Rates and Beer Taxes",
+     ylim = c(0, 4.5),
+     pch=20,
+     col="steelblue"
+    )
