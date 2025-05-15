@@ -344,3 +344,29 @@ plot(x=as.double(data21982$beertax),
      pch=20,
      col="steelblue"
     )
+
+setwd("C:/Users/Lenovo/Desktop/2025_Spring/Econometrics/code")
+library(rio)
+library(tidyverse)
+data <- import("WDI.dta")
+data$after = ifelse(data$year>=2009,1,0)
+Treated <- import("Treated.dta")
+data <- left_join(data, Treated, by = "country", suffix = c("","merge1"))
+data$treated[is.na(data$treated)] <- 0
+data$did = data$after*data$treated
+data$country1 <-  as.numeric(as.factor(data$country))
+install.packages("fixest")
+library(fixest)
+model <- feols(gdppc ~ did | country1 + year, data = data)
+summary(model)
+paralell_trends <- data %>%
+  group_by(year, treated) %>%
+  summarise(mean_gdppc = mean(gdppc, na.rm=TRUE), groups = "drop")
+model_reg <- feols(gdppc ~ treated*factor(year), data = data %>% filter(after = 0), cluster = ~country1)
+summary(model_reg)
+
+data$time_to_event2009 <- ifelse(data$treated == 1, data$year-2009, 0)
+table(data$time_to_event2009)
+install.packages("fastDummies")
+library(fastDummies)
+data <- dummy_cols
