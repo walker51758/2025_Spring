@@ -165,19 +165,17 @@ $$
 $$
 The objective is to test a hypothesis, like $\beta_1 = 0$, using data – to reach a tentative(尝试性的) conclusion whether the (null) hypothesis is correct or incorrect.
 
-Null hypothesis and two-sided alternative (双边备择假设):
+**Null hypothesis** and two-sided alternative (双边备择假设):
 $$
 H_0{:}\beta_1=\beta_{1,0}\text{ vs. }H_1{:}\beta_1\neq\beta_{1,0}
 $$
-*计量的假设检验通常令$\beta_{1,0}$为0.*
-
 In general,
 $$
 t = \frac{\hat{\beta}_1 - \beta_{1,0}}{SE(\hat{\beta}_1)} \tag{8}
 $$
 Reject at 5% significance level if $|t| > 1.96$.
 
-The $p$-value is $p = P\{|t| > |t^{act}|\} = $ probability in tails of normal outside $|t^{act}|$; you reject at the 5% significance level if the $p$-value is < 5%.
+**The $p$-value** is $p = P\{|t| > |t^{act}|\} = $ probability in tails of normal outside $|t^{act}|$; you reject at the 5% significance level if the $p$-value is < 5%. *$t^{act}$是实际算出来的。p-value很小可以认为是$\hat{\beta}_1$取到了不可能的值*.
 
 This procedure relies on the large-$n$ approximation that $\hat{\beta}_1$ is normally distributed; typically $n = 50$ is large enough for the approximation to be excellent.
 
@@ -187,3 +185,45 @@ A 95% confidence is, equivalently:
 
 - The set of points that cannot be rejected at the 5% significance level;
 -  A set-valued function of the data that contains the true parameter value 95% of the time in repeated samples. *这个区间有95%的概率包含真实值。*
+
+Because the $t$-statistic for $\beta_1$ is $N(0,1)$ in large samples, construction of a 95% confidence for $\beta_1$ is just like the case of the sample mean:
+$$
+\text{95\% confidence interval for } \beta_1 = \{\hat{\beta}_1 \pm 1.96 \times SE(\hat{\beta}_1)\} \tag{1}
+$$
+A concise (and conventional) way to report regressions: Put standard errors in parentheses (圆括号) below the estimated coefficients to which they apply.
+
+### 2.3 Regression when $X$ is Binary
+
+**Binary regressors** are sometimes called **dummy variables**.
+
+So far, $\beta_1$ has been called a “slope,” but that doesn’t make sense if $X$ is binary.
+
+When $X_i = 0, Y_i = \beta_0 + u_i, E(Y_i|X_i = 0) = \beta_0$;
+When $X_i = 1, Y_i = \beta_0 + \beta_1 + u_i, E(Y_i|X_i = 1) = \beta_0 + \beta_1$.
+
+So
+$$
+\beta_1 = E(Y_i|X_i = 1) - E(Y_i|X_i = 0)\\ \tag{2}
+= \text{population difference in group means}
+$$
+$SE(\hat{\beta}_1)$ has the usual interpretation. $t$-statistics, confidence intervals constructed as usual.
+
+### 2.4 Dummy Variables When There Are More Than Two Groups
+
+If a qualitative variable assumes <u>$J$ outcomes, $J-1$ dummy variables</u> are included into the model. Equivalently, one category is always dropped.
+
+This is because knowing one person is not in the $J-1$ categories tells us they must be in the $J$th category. Including J dummy variables would create <u>perfect multi-collinearity</u>.
+
+We can left out any group, but <u>the interpretation of the regression coefficients is affected</u> by the group left out.
+
+*比如研究收入与学历，我不将大学以上学历的人群作为虚拟变量，那么$\beta_i$的含义就是i组人群相比大学以上学历的人群收入差多少。*
+
+The results are always compared to the one category that is left out。
+
+### 2.5 Interactive Variables
+
+Dummy variables allow the intercept of regression line to vary between different groups as characterized by some qualitative (定性的) variable.
+
+It is sometimes useful, however, to allow the slope coefficient to vary across the groups as well.
+
+This is accomplished by incorporation by using an **interaction variable (or interaction term)**.
