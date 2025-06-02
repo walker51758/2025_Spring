@@ -10,7 +10,7 @@
 
 Linear regression lets us estimate the population regression line and its slope.
 
-- The The population regression line is the **expected value** of $Y$ given  $X$.
+- The The population regression line is the **expected value** of $Y$ given  $X$
 - The estimated regression can be used either for:
   - **causal inference** (learning about the causal effect on Y of a change in X)
   - **prediction** (predicting the value of Y given X, for an observation not in the data set)
@@ -18,17 +18,19 @@ Linear regression lets us estimate the population regression line and its slope.
 
 Statistical, or econometric,  inference about the slope entails
 
-- Estimation:
-  - How should we draw a line through the data to estimate the  population slope？
-    - Answer: ordinary least squares (OLS, 最小二乘法).
-- Hypothesis testing
-- Confidence intervals (置信区间)
+1. Estimation:
+   - How should we draw a line through the data to estimate the  population slope？
+     - Answer: ordinary least squares (OLS, 最小二乘法).
+
+2. Hypothesis testing
+
+3. Confidence intervals (置信区间)
 
 $$
 Y_i = \beta_0 + \beta_1X_i + u_i, i = 1, ...,n \tag{1}
 $$
 
-- We have n observations, $(X_i, Y_i), i = 1, ..., n$.
+- We have $n$ observations, $(X_i, Y_i), i = 1, ..., n$.
 - $X$ is the independent variable or regressor
 - $Y$ is the dependent variable
 - $\beta_0$ = intercept
@@ -112,7 +114,7 @@ We have treated OLS as a way to draw a straight line through the data on $Y$ and
 
 1. The conditional distribution of $u$ given $X$ has mean zero, that is $E(u|X = x) = 0$
    - It implies that $X_i$ and $u_i$ are uncorrelated. *这就意味着X是一个足够独立的变量在影响Y，而不会通过u作用于Y。*
-2. $(X_i,Y_i)$ are independently and indentically distributed.
+2. $(X_i,Y_i)$ are independently and indentically distributed (独立同分布).
    - The main place we will encounter non-i.i.d. sampling is when data are **recorded over time** for the same entity.
 3. Large outliers in $X$ and/or $Y$ are rare.
    - The substance of this assumption is that a large outlier can
@@ -144,3 +146,44 @@ If the three Least Squares Assumptions hold:
    - The smaller is the variance of the error $u_i$, the smaller is the variance of $\hat{\beta_1}$.
 
      if the errors are smaller, then the data will have a tighter scatter around the population regression line, so its slope will be estimated more precisely.
+
+### 1.6 The Least Squares Assumption for Prediction
+
+You just need to replace LSA#1 for Causal Inference.
+
+1. The out of sample observation $(X^{OOS},Y^{OOS})$ is drawn from the same distribution as the estimation sample $(X_i,Y_i), i = 1,…,n$.
+2. $(X_i,Y_i)$ are independently and indentically distributed.
+3. Large outliers in $X$ and/or $Y$ are rare.
+
+## Lecture 2
+
+### 2.1 Hypothesis Testing and the Standard Error of $\hat{\beta}_1$
+
+For $n$ large, $\hat{\beta}_1$ is approximately distributed
+$$
+\hat{\beta}_1\sim N\left(\beta_1,\frac{\sigma_v^2}{n(\sigma_X^2)^2}\right),\mathrm{~where~}v_i=(X_i-\mu_X)u_i
+$$
+The objective is to test a hypothesis, like $\beta_1 = 0$, using data – to reach a tentative(尝试性的) conclusion whether the (null) hypothesis is correct or incorrect.
+
+Null hypothesis and two-sided alternative (双边备择假设):
+$$
+H_0{:}\beta_1=\beta_{1,0}\text{ vs. }H_1{:}\beta_1\neq\beta_{1,0}
+$$
+*计量的假设检验通常令$\beta_{1,0}$为0.*
+
+In general,
+$$
+t = \frac{\hat{\beta}_1 - \beta_{1,0}}{SE(\hat{\beta}_1)} \tag{8}
+$$
+Reject at 5% significance level if $|t| > 1.96$.
+
+The $p$-value is $p = P\{|t| > |t^{act}|\} = $ probability in tails of normal outside $|t^{act}|$; you reject at the 5% significance level if the $p$-value is < 5%.
+
+This procedure relies on the large-$n$ approximation that $\hat{\beta}_1$ is normally distributed; typically $n = 50$ is large enough for the approximation to be excellent.
+
+### 2.2 Confidence Intervals for $\beta_1$
+
+A 95% confidence is, equivalently:
+
+- The set of points that cannot be rejected at the 5% significance level;
+-  A set-valued function of the data that contains the true parameter value 95% of the time in repeated samples. *这个区间有95%的概率包含真实值。*
