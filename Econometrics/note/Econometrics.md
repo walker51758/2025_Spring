@@ -313,7 +313,7 @@ $$
 
 #### 3.3.1 SER and RMSE
 
-As in regression with a single regressor, the $SER$ (Standard Error of Regression) and the $RMSE$ (Root Mean Squared Error) are measures of the spread of the $Y$s around the regression line:
+As in regression with a single regressor, the SER (Standard Error of Regression) and the RMSE (Root Mean Squared Error) are measures of the spread of the $Y$s around the regression line:
 $$
 \mathrm{SER} =\sqrt{\frac{1}{n-k-1}\sum_{i=1}^n\hat{u}_i^2} \tag{2}
 $$
@@ -369,4 +369,22 @@ Suppose you have a set of multiple dummy variables, which are mutually exclusive
 
 Solutions to the dummy variable trap: 
 
-1 .
+1. Omit one of the groups;
+2. Omit the intercept.
+
+*如果使用方法一：$\beta_0$（截距）表示参考组的平均成绩，$\beta_i$表示第$i$组相对于参考组的成绩平均差异。*
+
+*如果使用方法二：每一个虚拟变量的系数都表示该组的平均成绩。*
+
+#### 3.4.2 Imperfect multicollinearity
+
+**Imperfect multicollinearity** occurs when two or more regressors are very highly correlated.
+
+Imperfect multicollinearity implies that one or more of the regression coefficients will be imprecisely estimated.
+
+- The idea: the coefficient on $X_1$ is the effect of $X_1$ holding $X_2$ constant; but if $X_1$ and $X_2$ are highly correlated, there is very little variation in $X_1$ once $X_2$ is held constant.
+- Imperfect multicollinearity results in large standard errors for one or more of the OLS coefficients.
+
+#### 3.4.3 Control Variables
+
+But usually you can’t observe all omitted causal factors. In this case, you can include **control variables** which are <u>correlated with these omitted causal factors, but which themselves are not causal</u>.
