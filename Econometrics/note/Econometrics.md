@@ -171,7 +171,7 @@ H_0{:}\beta_1=\beta_{1,0}\text{ vs. }H_1{:}\beta_1\neq\beta_{1,0}
 $$
 In general,
 $$
-t = \frac{\hat{\beta}_1 - \beta_{1,0}}{SE(\hat{\beta}_1)} \tag{8}
+t = \frac{\hat{\beta}_1 - \beta_{1,0}}{SE(\hat{\beta}_1)} \tag{1}
 $$
 Reject at 5% significance level if $|t| > 1.96$.
 
@@ -188,7 +188,7 @@ A 95% confidence is, equivalently:
 
 Because the $t$-statistic for $\beta_1$ is $N(0,1)$ in large samples, construction of a 95% confidence for $\beta_1$ is just like the case of the sample mean:
 $$
-\text{95\% confidence interval for } \beta_1 = \{\hat{\beta}_1 \pm 1.96 \times SE(\hat{\beta}_1)\} \tag{1}
+\text{95\% confidence interval for } \beta_1 = \{\hat{\beta}_1 \pm 1.96 \times SE(\hat{\beta}_1)\} \tag{2}
 $$
 A concise (and conventional) way to report regressions: Put standard errors in parentheses (圆括号) below the estimated coefficients to which they apply.
 
@@ -203,7 +203,7 @@ When $X_i = 1, Y_i = \beta_0 + \beta_1 + u_i, E(Y_i|X_i = 1) = \beta_0 + \beta_1
 
 So
 $$
-\beta_1 = E(Y_i|X_i = 1) - E(Y_i|X_i = 0)\\ \tag{2}
+\beta_1 = E(Y_i|X_i = 1) - E(Y_i|X_i = 0)\\ \tag{3}
 = \text{population difference in group means}
 $$
 $SE(\hat{\beta}_1)$ has the usual interpretation. $t$-statistics, confidence intervals constructed as usual.
@@ -227,3 +227,63 @@ Dummy variables allow the intercept of regression line to vary between different
 It is sometimes useful, however, to allow the slope coefficient to vary across the groups as well.
 
 This is accomplished by incorporation by using an **interaction variable (or interaction term)**.
+$$
+Earnings_i=\beta_0+\beta_1Gender_i+\beta_2Edu_i+\varepsilon_i,
+$$
+In this model $\beta_1$ measures the difference in earnings between male and female, holding education constant.
+
+The slope coefficient on education, $\beta_2$, measures the increment in earnings resulting from an additional year of schooling, $\frac{\partial Earnings}{\partial Edu} = \beta_2$. In this specification, this “return” to education is assumed to be equal for men and women.
+
+But it is possible that it differs by gender. To allow for this possibility we include a new variable in the model. It is the <u>education variable multiplied by the gender variable</u>.
+$$
+Earning_i=\beta_0+\beta_1Gender_i+\beta_2Edu_i+\beta_3Gender_i\times Edu_i+\varepsilon_i \tag{4}
+$$
+
+$$
+\frac{\Delta Earning}{\Delta Edu}=\beta_2+\beta_3Gender=
+\begin{cases}
+\quad\beta_2,Gender=0 \\
+\beta_2+\beta_3,Gender=1 & 
+\end{cases}
+$$
+
+Thus, $\beta_3$ represents the difference in slope between men and women.
+
+### 2.6 Heteroskedasticity and Homoskedasticity
+
+If $var(u|X = x)$ is constant – that is, if the variance of the conditional distribution of $u$ given $X$ does not depend on $X$ – then $u$ is said to be **homoskedastic** (同方差性). 
+
+Otherwise, $u$ is **heteroskedastic** (异方差性).
+
+<img src="image/5.png" style="zoom:67%;" />
+
+So far, we have assumed that $u$ might be heteroskedastic. If $u$ is homoskedastic, $var(u_i|X_i = x) = \sigma_u^2$, then
+$$
+\begin{aligned}
+\mathrm{var}(\hat{\beta}_{1}) & =\frac{\mathrm{var}[(X_i-\mu_x)u_i]}{n(\sigma_X^2)^2}\quad\text{(general formula)} \\
+ & =\frac{\sigma_u^2}{n\sigma_X^2}\quad\text{(simplification of }u\text{ is homoscedastic)}
+\end{aligned}
+$$
+Along with this homoskedasticity-only formula for the variance of $\hat{\beta}_1$, we have **homoskedasticity-only standard errors**:
+$$
+SE(\hat{\beta}_1)=\sqrt{\frac{1}{n}\times\frac{\frac{1}{n-2}\sum_{i=1}^n\hat{u}_i^2}{\frac{1}{n}\sum_{i=1}^n\left(X_i-\bar{X}\right)^2}}.
+$$
+The usual standard errors is called **heteroskedasticity – robust standard errors**. They are valid whether or not the errors are heteroskedastic.
+
+The main advantage of the homoskedasticity-only standard errors is that the <u>formula is simpler</u>. But the disadvantage is that <u>the formula is only correct if the errors are homoskedastic</u>.
+
+## Lecture 3: Linear Regression with Multiple Regressors
+
+### 3.1 Omitted Variable Bias
+
+When $\beta_1$ is a causal effect, the first least squares assumption for causal inference must hold: $E(u|X) = 0$.
+
+The error $u$ arises because of factors that influence $Y$ but are not included in the regression function**.**
+
+**Omitted variable bias**: there are always omitted variables, but only if the omission of those variables results in $E(u|X) \neq 0$, then the OLS estimator will be biased.
+
+For omitted variable bias to occur, the <u>omitted variable $Z$ must satisfy two</u>
+<u>conditions</u>:
+
+1. $Z$ is a determinant of $Y$.
+2. $Z$ is correlated with the regressor$X$.
