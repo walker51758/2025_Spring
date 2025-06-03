@@ -65,7 +65,7 @@ Two regression statistics provide complementary measures of **how well the regre
 
 It measures the fraction (比例) of the variance of $Y$ is explained by $X$. It ranges from 0 (no fit) to 1 (perfect fit).
 $$
-R^2 = \frac{\text{ESS}}{\text{TSS}} = \frac{\sum_i^n(\hat{Y_i}-\bar{Y})^2}{\sum_i^n(Y_i-\bar{Y})^2} \tag{4}
+R^2 = \frac{\text{ESS}}{\text{TSS}} = \frac{\sum_i^n(\hat{Y_i}-\bar{\hat{Y}})^2}{\sum_i^n(Y_i-\bar{Y})^2} \tag{4}
 $$
 
 - **TSS（Total Sum of Squares）**：$Y$的总变异（实际值与均值的偏离）。
@@ -282,8 +282,91 @@ The error $u$ arises because of factors that influence $Y$ but are not included 
 
 **Omitted variable bias**: there are always omitted variables, but only if the omission of those variables results in $E(u|X) \neq 0$, then the OLS estimator will be biased.
 
-For omitted variable bias to occur, the <u>omitted variable $Z$ must satisfy two</u>
-<u>conditions</u>:
+For omitted variable bias to occur, the <u>omitted variable $Z$ must satisfy two conditions</u>:
 
 1. $Z$ is a determinant of $Y$.
 2. $Z$ is correlated with the regressor$X$.
+
+Three ways to overcome omitted variable bias: 
+
+1. <u>Run a randomized controlled experiment in which treatment ($STR$, student-teacher ratio) is randomly assigned</u>: then $PctEL$ (percentage of english learners) is still a determinant of $TestScore$, but $PctEL$ is uncorrelated with $STR$.
+2. Adopt the “cross tabulation” approach, with finer gradations (划分) of $STR$ and $PctEL$ – <u>within each group, all classes have the same $PctEL$</u>, so we control for $PctEL$.
+3. Use a regression in which the omitted variable ($PctEL$) is no longer omitted: <u>include PctEL as an additional regressor in a multiple regression</u>.
+
+### 3.2 The Population Multiple Regression Model
+
+$$
+Y_i=\beta_0+\beta_1X_{1i}+\beta_2X_{2i}+u_i,i=1,...,n \tag{1}
+$$
+
+- $(Y_i, X_{1i}, X_{2i})$ denote the $i^{\text{th}}$ observation on $Y, X_1, X_2$.
+- $\beta_0$ = unknown population intercept
+- $\beta_1$ = effect on $Y$ of a change in $X_1$, holding $X_2$ constant.
+- $\beta_2$ = effect on $Y$ of a change in $X_2$, holding $X_1$ constant.
+- $u_i$ = th regression error (omitted factors).
+
+*加入额外的变量后，如果相关系数为正，原本的变量的系数会减小。*
+
+ <img src="image/3.png" style="zoom:50%;" />
+
+### 3.3 Measures of Fit for Multiple Regression
+
+#### 3.3.1 SER and RMSE
+
+As in regression with a single regressor, the $SER$ (Standard Error of Regression) and the $RMSE$ (Root Mean Squared Error) are measures of the spread of the $Y$s around the regression line:
+$$
+\mathrm{SER} =\sqrt{\frac{1}{n-k-1}\sum_{i=1}^n\hat{u}_i^2} \tag{2}
+$$
+
+$$
+\mathrm{RMSE} =\sqrt{\frac{1}{n}\sum_{i=1}^n\hat{u}_i^2} \tag{3}
+$$
+
+#### 3.3.2 $R^2$ and Adjusted $R^2$
+
+The $R^2$ is the fraction of the variance explained – same definition as in regression with a single regressor:
+$$
+R^2=\frac{ESS}{TSS}=1-\frac{SSR}{TSS} \tag{4}
+$$
+*为什么$R^2$随变量增多而减小？因为变量增多，意味着$u_i$中的omitted factors减少，$SSR$减小，所以$R^2$增加。*
+
+The $\bar{R}^2$ (the adjusted $R^2$) corrects this problem by "penalizing" you for including another regressor, so the $\bar{R}^2$ does not necessarily increase when you add another regressor.
+
+Note that $\bar{R}^2 < R^2$, however if $n$ is large the two will be very close.
+$$
+\overline{R}^2=1-\left(\frac{n-1}{n-k-1}\right)\frac{SSR}{TSS} \tag{5}
+$$
+
+### 3.4 The Least Squares Assumptions for Causal Inference in Multiple Regression
+
+Let $\beta_1, \beta_2, ..., \beta_k$ be causal effects.
+$$
+Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + ... + \beta_k X_{ki} + u_i
+$$
+
+1. The conditional distribution of $u$ given the $X$ has mean zero, $E(u_i|X_{1i}=x_1,\ldots,X_{ki}=x_k)=0$.
+
+2. $(X_{1i}, ..., X_{ki}, Y_i)$ are i.i.d.
+3. Large outliers are unlikely.
+4. There is no perfect multicollinearity.
+
+#### 3.4.1 Perfect Multicollinearity
+
+**Perfect multicollinearity** is when one of the regressors is an exact linear function of the other regressors.
+
+Under the four Least Squares Assumptions,
+
+- The sampling distribution of $\hat{\beta}_1$ has mean $\beta_1$
+- $\text{var}(\hat{\beta}_1)$ is inversely proportional to $n$.
+- Other than its mean and variance, the exact (finite-$n$) distribution of $\hat{\beta}_1$ is very complicated; but for large $n$...
+  - $\hat{\beta}_1$ is consistent: $\hat{\beta}_1 \stackrel{p}{\rightarrow} \beta_1$ (law of large numbers)
+  - $\frac{\hat{\beta}_1 - E(\hat{\beta}_1)}{\sqrt{\text{var}(\hat{\beta}_1)}}$ is approximately distributed $N(0,1)$
+  - These statements hold for $\hat{\beta}_1, ..., \hat{\beta}_k$
+
+Suppose you have a set of multiple dummy variables, which are mutually exclusive and exhaustive (互斥且穷尽), like Freshmen, Sophomores, Juniors, Seniors, Other. <u>If you include all these dummy variables and a constant, you will have perfect multicollinearity</u> – this is sometimes called the **dummy variable trap**.
+
+*导致多重共线性的原因是所有的虚拟变量加起来后等于1.*
+
+Solutions to the dummy variable trap: 
+
+1 .
