@@ -155,7 +155,7 @@ You just need to replace LSA#1 for Causal Inference.
 2. $(X_i,Y_i)$ are independently and indentically distributed.
 3. Large outliers in $X$ and/or $Y$ are rare.
 
-## Lecture 2
+## Lecture 2: Hypothesis Tests and Confidence Intervals
 
 ### 2.1 Hypothesis Testing and the Standard Error of $\hat{\beta}_1$
 
@@ -388,3 +388,285 @@ Imperfect multicollinearity implies that one or more of the regression coefficie
 #### 3.4.3 Control Variables
 
 But usually you can’t observe all omitted causal factors. In this case, you can include **control variables** which are <u>correlated with these omitted causal factors, but which themselves are not causal</u>.
+
+Example:
+
+<img src="image/4.png" style="zoom: 33%;" />
+
+$LchPct$ is the control variable. It is correlated with and controls for income-related outside learning opportunities.
+
+We need a mathematical condition for what makes an effective control variable. This condition is **conditional mean independence**: <u>given the control variable, the mean of $u_i$ doesn’t depend on the variable of interest</u>.
+
+Let $X_i$ denote the variable of interest and $W_i$ denote the control variable(s). 
+$$
+E(u_i|X_i, W_i) = E(u_i|W_i) \tag{6}
+$$
+If $W$ is such that conditional mean independence satisfied, then
+
+- The OLS estimator of the effect of interest $\hat{\beta}_1$ is unbiased.
+- The OLS estimator of the coefficient on the control variable $\hat{\beta}_2$ does not have a causal interpretation. The reason is that the control variable is correlated with omitted variables in the error term, so that $\hat{\beta}_2$ is subject to omitted variable bias.
+
+## Lecture 4: Hypothesis Tests and Confidence Intervals in Multiple Regression
+
+### 4.1 Some Kinds of Distribution
+
+#### 4.1.1 $\chi^2$- Distribution
+
+If $x_1$, $x_2$, . . . , $x_n$ are independent normal variables with mean zero and variance 1, that is, $x_i \sim N(0,1),i=1,2,..., n$, then $Z=\sum_ix_i^2$ is said to have the $\chi^2$-distribution with degrees of freedom $n$, and we will write this as $Z \sim \chi_n^2.$
+
+The subscript $n$ denotes degrees of freedom.
+
+The $\chi_n^2$ distribution is <u>the distribution of the sum of squares of $n$ independent standard normal variables</u>.
+
+If $x_i \sim N(0,\sigma^2)$, then $Z$ should be defined as $Z=\sum_i\frac{x_i^2}{\sigma^2}=\frac{\sum_ix_i^2}{\sigma^2}$.
+
+The $\chi_n^2$ -distribution has an "additive property". If $Z _1\sim \chi _n^2;$ and $Z_2\sim\chi_m^2$ and $Z_1$, and $Z_2$ are independent, then $Z_1+Z_2\sim\chi_{n+m}^2$.
+
+We can consider simple additions only, not any general linear combinations.
+
+#### 4.1.2 $t$ - Distribution
+
+If $x\sim N(0, 1)$ and $y \sim \chi _n^2$ and $x$ and $y$ are independent, $Z=\frac x{\sqrt{y/n}}$ has a $t$ - distribution with degrees of freedom $n$. We write this as $Z\sim t_n$. 
+
+The subscript $n$ again denotes the degrees of freedom.
+
+Thus the $t$ - distribution is <u>the distribution of a standard normal variable divided by the square root of an independent averaged $x^2$ variable</u> $(x^2$ variable divided by its degrees of freedom).
+
+The $t$ - distribution is a symmetric probability distribution like the normal distribution but is flatter than the normal and has longer tails. As the degrees of freedom $n$ approaches infinity, the t-distribution approaches the normal distribution.
+
+#### 4.1.3 $F$ - Distribution
+
+If $y_1\sim\chi_{n_1}^2$ and $y_2\sim\chi_{n_2}^2$ and $y_1$ and $y_2$ are independent, $Z=\frac{y_1/n_1}{y_2/n_2}$ has the $F$ - distribution with degrees of freedom (d.f.) $n_1$ and $n_2$. We write this as $Z\thicksim F_{n_1,n_2}$.
+
+The first subscript, $n_1$ refers to the d.f. of the numerator, and the second subscript, $n_2$ refers to the d.f. of the denominator.
+
+The F-distribution is thus <u>the distribution of the ratio of two independent averaged $\chi^2$ variables</u>.
+
+### 4.2 Hypothesis Tests and Confidence Intervals for a Single Coefficient
+
+Hypothesis tests and confidence intervals for a single coefficient in multiple regression follow the same logic and recipe as for the slope coefficient in a single-regressor model.
+
+$\frac{\hat{\beta}_{1}-E(\hat{\beta}_{1})}{\sqrt{\operatorname{var}(\hat{\beta}_{1})}}$ is approximately distributed $N(0,1)$ (CLT).
+
+Thus <u>hypotheses on $\beta_{1}$ can be tested using the usual $t$-statistic</u>, and <u>confidence intervals are constructed as $\{\hat{\beta}_{1} \pm 1.96 \times \operatorname{SE} \hat{\beta}_{1}\}$.</u>
+
+## Lecture 5: Nonlinear Regression Functions
+
+### 5.1 The General Nonlinear Population Regression Function
+
+$$
+Y_i = f(X_{1i}, X_{2i, ..., X_{ki}}) + u_i, i = 1, ..., n \tag{1}
+$$
+
+Assumptions:
+
+1. $E(u_{i}|X_{1i},X_{2i},\ldots,X_{ki})=0$ (same), so $f$ is the conditional expectation of $Y$ given the $X$'s.
+2. $(X_{1i},\ldots,X_{ki},Y_{i})$ are i.i.d. (same).
+3. Big outliers are rare (same idea; the precise mathematical condition depends on the specific $f$).
+4. No perfect multicollinearity (same idea; the precise statement depends on the specific $f$).
+
+The expected difference in Y associated with a difference in $X_1$, holding$ X_2,..., X_k$ constant is
+$$
+\Delta Y=f(X_1+\Delta X_1,X_2,...,X_k)-f(X_1,X_2,...,X_k) \tag{2}
+$$
+
+### 5.2 Nonlinear Functions of a Single Independent Variable
+
+We'll look at two complementary approaches:
+
+1. Polynomials in $X$
+
+   The population regression function is approximated by a quadratic, cubic, or higher-degree polynomial.
+
+2. Logarithmic transformations
+
+   $Y$ and/or $X$ is transformed by taking its logarithm, which probivides a "percentages" interpretaion of the coefficents that makes sense in many applications.
+
+#### 5.2.1 Polynomials in $X$
+
+$$
+Y_i = \beta_0 + \beta_1 X_i + \beta_2 X_i^2 + ... + \beta_r X_i^r + u_i
+$$
+
+This is just the linear multiple regression model - except that the regressors are powers of $X$.
+
+Esitmation, hypothesis testing, etc. proceeds as in the multiple regression model using OLS.
+
+Interpreting the estimated regression function:
+
+- The individual coefficients have complicated interpretations.
+- plot predicted values as a function of $x$.
+- compute predicted $\Delta Y/\Delta X$ for different values of $x$.
+
+<img src="image/6.png" style="zoom:50%;" />
+
+<u>Caution: Don't extrapolate (推测) outside the range of the data.</u>
+
+#### 5.2.2 Logarithmic Functions of $Y$ and/or $X$
+
+Logarithmic transforms permit modeling relations in "percentage" terms (like elasticities), rather than linearly.
+
+Three log regression specifications:
+
+1. linear-log
+   $$
+   Y_i = \beta_0 + \beta_1 \ln(X_i) + u_i
+   $$
+
+2. log-linear
+   $$
+   \ln(Y_i) = \beta_0 + \beta_1 X_i + u_i
+   $$
+
+3. log-log
+   $$
+   \ln(Y_i) = \beta_0 + \beta_1 \ln(X_i) + u_i
+   $$
+
+Linear-log regression:
+
+- for small $\Delta X$, $\beta_{1} \cong \frac{\Delta Y}{\Delta X / X}$
+- Now $100 \times \frac{\Delta X}{X}$ = percentage change in $X$, so a 1% increase in $X$ (multiplying $X$ by 1.01) is associated with a $0.01\beta_{1}$ change in $Y$.
+
+Log-linear regression:
+
+- for small $\Delta X$, $\beta_{1} \cong \frac{\Delta Y / Y}{\Delta X}$
+
+- Now a change in $X$ by one unit ($\Delta X = 1$) is associated with a $100\beta_{1}\%$ change in $Y$.
+
+- What are the units of $u_i$ and the $\text{SER}$?
+
+  fractional (proportional) deviations
+
+Linear-log regression:
+
+- for small $\Delta X$, $\beta_{1} \cong \frac{\Delta Y / Y}{\Delta X / X}$
+- Now $100 \times \frac{\Delta Y}{Y}$ = percentage change in $Y$, and $100 \times \frac{\Delta X}{X}$ = percentage change in $X$, so a 1% increase in $X$ is associated with a $\beta_{1}\%$ change in $Y$.
+- In the log-log specification, $\beta_1$ has the interpretation of an elasticity.
+
+#### 5.2.3 Negative Exponential Growth
+
+Here is a nonlinear function in which $Y$ always increases with $X$ and there is a maximum (asymptote, 渐近线) value of $Y$:
+$$
+Y = \beta_0 - \alpha e^{-\beta_1 X}
+$$
+
+$\beta_0$, $\beta_1$, and $\alpha$ are unknown parameters. This is called a negative exponential growth curve. The asymptote as $X \to \infty$ is $\beta_0$.
+
+We want to estimate the parameters of
+$$
+Y_i = \beta_0 [1-e^{\beta_1X_i+\beta_2}] + u_i,\text{ where } \alpha = \beta_0 e^{\beta_2}
+$$
+ The linear-log and polynomial models are linear in the  parameters $\beta_0$ and $\beta_1$ – but the model forgoing (前述的) is not.
+
+Models that are nonlinear in one or more parameters can be estimated by nonlinear least squares (NLS).
+$$
+\min_{\beta_0,\beta_1,\beta_2}\sum_{i=1}^n\left\{Y_i-\beta_0\left[1-e^{-\beta_1X_i+\beta_2}\right]\right\}^2
+$$
+*NLS只能用STATA等软件计算，无法手算。*
+
+The choice of functional form should be guided by judgment (which interpretation makes the most sense in your application), tests (RMSE), and plotting predicted values.
+
+### 5.3 Interaction Between Independent Variables
+
+Perhaps smaller classes help more if there are many English learners, who need individual attention. That is, $\frac{\Delta TestScore}{\Delta STR}$ might depend on $PctEL$.
+
+#### 5.3.1 Interactions between two binary variables
+
+To allow the effect of changing $D_{1}$ to depend on $D_{2}$, include the "interaction term" $D_{1i} \times D_{2i}$ as a regressor:
+$$
+Y_{i} = \beta_{0} + \beta_{1}D_{li} + \beta_{2}D_{2i} + \beta_{3}(D_{li} \times D_{2i}) + u_{i}
+$$
+$D_{1i}, D_{2i}$ are binary.
+
+<u>General rule: compare the various cases</u>
+
+- (a) $E(Y_i \mid D_{1i} = 0, D_{2i} = d_2) = \beta_0 + \beta_2 d_2$
+
+- (b) $E(Y_i \mid D_{1i} = 1, D_{2i} = d_2) = \beta_0 + \beta_1 + \beta_2 d_2 + \beta_3 d_2$
+
+- subtract (a) - (b):
+
+  $E(Y_i \mid D_{1i} = 1, D_{2i} = d_2) - E(Y_i \mid D_{1i} = 0, D_{2i} = d_2) = \beta_1 + \beta_3 d_2$
+
+- The effect of $D_1$ depends on $d_2$ (what we wanted). $\beta_3$ = increment to the effect of $D_1$, when $D_2 = 1$
+
+#### 5.3.2 Interactions between continuous and binary variables
+
+To allow the effect of $X$ to depend on $D$, include the "interaction term" $D_{i} \times X_{i}$ as a regressor:
+$$
+Y_{i} = \beta_{0} + \beta_{1}D_{i} + \beta_{2}X_{i} + \beta_{3}(D_{i} \times X_{i}) + u_{i}
+$$
+$D_i$ is binary variable and $X_i$ is continuous variable.
+
+General rule: compare the various cases
+
+- (a) $Y = \beta_{0} + \beta_{1}D + \beta_{2}X + \beta_{3}(D \times X)$
+
+- (b) $Y + \Delta Y = \beta_{0} + \beta_{1}D + \beta_{2}(X + \Delta X) + \beta_{3}[D \times (X + \Delta X)]$
+
+- subtract (a) - (b):
+
+  $$\Delta Y = \beta_{2} \Delta X + \beta_{3} D \Delta X \quad \text{or} \quad \frac{\Delta Y}{\Delta X} = \beta_{2} + \beta_{3} D$$
+
+- The effect of $X$ depends on $D$ (what we wanted). $\beta_{3}$ = increment to the effect of $X$, when $D = 1$
+
+#### 5.3.3 Interactions between two continuous variables
+
+To allow the effect of $X_{1i}$ to depend on $X_{2i}$, include the "interaction term" $X_{1i} \times X_{2i}$ as a regressor:
+$$
+Y_{i} = \beta_{0} + \beta_{1}X_{1i} + \beta_{2}X_{2i} + \beta_{3}(X_{1i} \times X_{2i}) + u_{i}
+$$
+$X_{1i}, X_{2i}$ are continuous variables.
+
+General rule: compare the various cases
+
+- (a) $Y = \beta_{0} + \beta_{1}X_{1i} + \beta_{2}X_{2i} + \beta_{3}(X_{1i} \times X_{2i})$
+
+- (b) $Y + \Delta Y = \beta_{0} + \beta_{1}(X_{1i} + \Delta X_{1i}) + \beta_{2}X_{2i} + \beta_{3}[X_{2i} \times (X_{1i} + \Delta X_{1i})]$
+
+- subtract (a) - (b):
+
+  $$\Delta Y = \beta_{1} \Delta X_{1i} + \beta_{3} X_{2i} \Delta X_{1i} \quad \text{or} \quad \frac{\Delta Y}{\Delta X_{1i}} = \beta_{1} + \beta_{3} X_{2i}$$
+
+- The effect of $X_{1}$ depends on $X_{2}$ (what we wanted). $\beta_{3}$ = increment to the effect of $X_1$ from a unit change in $X_2$
+
+## Lecture 6: Regression with Panel Data
+
+### 6.1 Panel Data
+
+#### 6.1.1 What is Panel Data
+
+ A **panel dataset** contains observations on multiple entities (individuals, states, companies…), where <u>each entity is observed at two or more points in time</u>.
+
+- Data on 1000 individuals, in four different months, for 4000 observations total.
+
+Another term for panel data is **longitudinal data**.
+
+**balanced panel**:  no missing observations, that is, all variables are observed for all entities (states) and all time periods (years).
+
+#### 6.1.2 Notation for Panel Data
+
+A double subscript distinguishes entities (states) and time periods (years).
+
+- $i$ = entity, $n$ = number of entities
+
+  so $i = 1, ..., n$
+
+- $t$ = time period, $T$ = number of time periods
+
+  so $t = 1, ..., T$
+
+- Suppose we have 1 regressor, the data are: $(X_{it}, Y_{it})$.
+
+  panel data with $k$ regressor: $(X_{1, it}, X_{2, it}, ..., X_{k, it}, Y_{it})$
+
+#### 6.1.3 Why are Panel Data Useful?
+
+With panel data we can <u>control for factors</u> that:
+
+1. Vary across entities but do not vary over time.
+2. Could cause omitted variable bias if they are omitted.
+3. Are unobserved or unmeasured – and therefore cannot be included in the regression using multiple regression.
+
+Here’s the key idea: If an omitted variable does not change over time, then any changes in $Y$ over time cannot be caused by the omitted variable.
