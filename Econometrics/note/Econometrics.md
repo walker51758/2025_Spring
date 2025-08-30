@@ -12,11 +12,11 @@ Linear regression lets us estimate the population regression line and its slope.
 
 - The The population regression line is the **expected value** of $Y$ given  $X$
 - The estimated regression can be used either for:
-  - **causal inference** (learning about the causal effect on Y of a change in X)
-  - **prediction** (predicting the value of Y given X, for an observation not in the data set)
+  - **causal inference** (learning about the causal effect on $Y$ of a change in $X$)
+  - **prediction** (predicting the value of $Y$ given $X$, for an observation not in the data set)
 - **Causal inference** and **prediction** place different requirements  on the data – but both use the same regression toolkit.
 
-Statistical, or econometric,  inference about the slope entails
+Statistical, or econometric, inference about the slope entails
 
 1. Estimation:
    - How should we draw a line through the data to estimate the  population slope？
@@ -31,12 +31,12 @@ Y_i = \beta_0 + \beta_1X_i + u_i, i = 1, ...,n \tag{1}
 $$
 
 - We have $n$ observations, $(X_i, Y_i), i = 1, ..., n$.
-- $X$ is the independent variable or regressor
+- $X$ is the independent variable or **regressor**
 - $Y$ is the dependent variable
 - $\beta_0$ = intercept
 - $\beta_1$ = slope
 - $u_i$ = the regression error
-- The regression error consists of omitted factors and error in the  measurement of $Y$.
+- The regression error consists of omitted factors and error in the measurement of $Y$.
 
 <img src="image/1.png" style="zoom:50%;" />
 
@@ -65,7 +65,7 @@ Two regression statistics provide complementary measures of **how well the regre
 
 It measures the fraction (比例) of the variance of $Y$ is explained by $X$. It ranges from 0 (no fit) to 1 (perfect fit).
 $$
-R^2 = \frac{\text{ESS}}{\text{TSS}} = \frac{\sum_i^n(\hat{Y_i}-\bar{\hat{Y}})^2}{\sum_i^n(Y_i-\bar{Y})^2} \tag{4}
+R^2 = \frac{\text{ESS}}{\text{TSS}} = \frac{\sum_i^n(\hat{Y_i}-\bar{Y})^2}{\sum_i^n(Y_i-\bar{Y})^2} \tag{4}
 $$
 
 - **TSS（Total Sum of Squares）**：$Y$的总变异（实际值与均值的偏离）。
@@ -117,9 +117,7 @@ We have treated OLS as a way to draw a straight line through the data on $Y$ and
 2. $(X_i,Y_i)$ are independently and indentically distributed (独立同分布).
    - The main place we will encounter non-i.i.d. sampling is when data are **recorded over time** for the same entity.
 3. Large outliers in $X$ and/or $Y$ are rare.
-   - The substance of this assumption is that a large outlier can
-     strongly influence the results – so we need to **rule out** large
-     outliers.
+   - The substance of this assumption is that a large outlier can strongly influence the results – so we need to **rule out** large outliers.
 
 ### 1.5 The Sampling Distribution
 
@@ -670,3 +668,232 @@ With panel data we can <u>control for factors</u> that:
 3. Are unobserved or unmeasured – and therefore cannot be included in the regression using multiple regression.
 
 Here’s the key idea: If an omitted variable does not change over time, then any changes in $Y$ over time cannot be caused by the omitted variable.
+
+### 6.2 Panel Data with Two Time Periods
+
+Consider the panel data model,
+$$
+FatalityRate_{it} = \beta_{0} + \beta_{1} BeerTax_{it} + \beta_{2}Z_{i} + u_{it}
+$$
+$Z_{i}$ is a factor that does not change over time.
+
+Suppose $Z_{i}$ is not observed, so its omission could result in omitted variable bias.
+
+The effect of $Z_{i}$ can be eliminated using $T=2$ years.
+$$
+FatalityRate_{i1988}=\beta_0+\beta_1BeerTax_{i1988}+\beta_2Z_i+u_{i1988}\\FatalityRate_{i1982}=\beta_0+\beta_1BeerTax_{i1982}+\beta_2Z_i+u_{i1982}
+$$
+
+$$
+FatalityRate_{i1988}-FatalityRate_{i1982}=\\\beta_{1}(BeerTax_{i1988}-BeerTax_{i1982})+(u_{i1988}-u_{i1982})
+$$
+
+This differences regression doesn’t have an intercept – it was eliminated by the subtraction step.
+
+### 6.3 Fixed Effects Regression
+
+#### 6.3.1 Model Setting
+
+What if you have more than 2 time periods ($T > 2$)? Fixed effect regression model.
+
+Suppose we have $n = 3$ states: California, Texas, and Massachusetts.
+
+Population regression for California (that is, $i = CA$):
+$$
+\begin{align}
+Y_{CA,t} &= \beta_0 + \beta_1 X_{CA,t} + \beta_2 Z_{CA} + u_{CA,t}\\
+&= (\beta_0 + \beta_2 Z_{CA}) + \beta_1 X_{CA,t} + u_{CA,t}
+\end{align}
+$$
+
+- $\alpha_{CA} = \beta_0 + \beta_2 Z_{CA}$ doesn’t change over time
+- $\alpha_{CA}$ is the intercept for CA, and $\beta_1$ is the slope
+- The intercept is unique to CA, but <u>the slope is the same in all the states</u>: parallel lines. *因为我们用一个模型来拟合各个州的数据。*
+
+$$
+Y_{_{it}}=\alpha_{_i}+\beta_{_1}X_{_{it}}+u_{_{it}},i=\mathrm{CA,~TX,~MA,~}t=1,...,T
+$$
+
+<img src="image/7.png" style="zoom:33%;" />
+
+In binary regressor form:
+$$
+Y_{it} = \beta_0 + \gamma_{CA} DCA_i + \gamma_{TX} DTX_i + \beta_1 X_{it} + u_{it}
+$$
+
+- $DCA_i = 1$ if state is CA, = 0 otherwise.
+- $DTX_i = 1$ if state is TX, = 0 otherwise.
+- leave out $DMA_i$ in case of multicollinearity.
+
+**Summary: Two ways to write the fixed effects model**
+
+1. **“n-1 binary regressor” form**
+
+   $Y_{it} = \beta_{0} + \beta_{1}X_{it} + \gamma_{2}D_{2i} + \ldots + \gamma_{n}D_{ni} + u_{it}$
+
+   where $D_{2i} = \begin{cases} 1 \text{ for } i=2 \text{ (state \#2)} \\ 0 \text{ otherwise} \end{cases}$, etc.
+
+2. **“Fixed effects” form**
+
+   $Y_{it} = \beta_{1}X_{it} + \alpha_{i} + u_{it}$
+
+   $\alpha_{i}$ is called a “state fixed effect” or “state effect” – it is the constant (fixed) effect of being in state $i$.
+
+#### 6.3.2 Estimaition
+
+Three estimation methods:
+
+1. “$n-1$ binary regressors” OLS regression
+2. “Entity-demeaned” OLS regression
+3. “Changes” specification, without an intercept (only works for T = 2)
+- These three methods produce identical estimates of the regression coefficients, and identical standard errors.
+- Methods 1 and 2 work for general T.
+- Method 1 is only practical when n isn’t too big.
+
+**"$n-1$ binary regressors" OLS regression**: 
+
+<img src="image/8.png" style="zoom:50%;" />
+
+**"Entity-demeaned" OLS regression**: 
+
+The fixed effects regression model is $Y_{it} = \beta_1 X_{it} + \alpha_i + u_{it}$.
+
+The entity averages satisfy $\frac{1}{T} \sum_{t=1}^{T} Y_{it} = \alpha_i + \beta_1 \frac{1}{T} \sum_{t=1}^{T} X_{it} + \frac{1}{T} \sum_{t=1}^{T} u_{it}$
+
+Deviation from entity averages is $Y_{it} - \frac{1}{T} \sum_{t=1}^{T} Y_{it} = \beta_1 \left( X_{it} - \frac{1}{T} \sum_{t=1}^{T} X_{it} \right) + \left( u_{it} - \frac{1}{T} \sum_{t=1}^{T} u_{it} \right)$
+
+denote: $\tilde{Y}_{it}\:=\:Y_{it}\:-\:\frac{1}{T}\sum_{t=1}^{T}Y_{it}$,  $\tilde{X}_{it}\:=\:X_{it}\:-\:\frac{1}{T}\sum_{t=1}^{T}X_{it}$. $\tilde{X}$ and $\tilde{Y}$ are "entity-demeaned" (中心化) data.
+
+Using OLS to regress $\tilde{Y_{it}} = \beta_1 \tilde{X_{it}} + \tilde{u_{it}}$.
+
+This is like the “changes” approach, but instead $Y_{it}$ is  deviated from the state average instead of $Y_{i1}$.
+
+### 6.4 Time Fixed Effect Regression
+
+An omitted variable might vary over time but not across states:
+
+- Safer cars (air bags, etc.); changes in national laws. *这些对全国产生影响的因素，在不同的州内的某一时间点上是统一的。*
+
+- These produce intercepts that change over time.
+
+- Let $S_t$ denote the combined effect of variables which changes over time but not states ("safer cars").
+
+- The resulting population regression model is:
+  $$
+  Y_{it} = \beta_0 + \beta_1 X_{it} + \beta_2 Z_i + \beta_3 S_t + u_{it}
+  $$
+  *前面我们已经固定了不同州的差异因素，比如文化、制度等，它们不随时间变化，即图中的$Z_i$.*
+
+Two formulations of regression with time fixed effects:
+
+1. **"T-1 binary regressor" version:**
+
+  $$Y_{it} = \beta_0 + \beta_1 X_{it} + \delta_2 B2_t + \ldots \delta_T BT_t + u_{it}$$
+
+  where $B2_t = \begin{cases} 1 \text{ when } t=2 \text{ (year \#2)} \\ 0 \text{ otherwise} \end{cases}$, etc.
+
+2. **"Time effects" version:**
+
+  $$Y_{it} = \beta_1 X_{it} + \lambda_t + u_{it}$$
+
+Estimation methods:
+
+1. **"T-1 binary regressor" OLS regression**
+
+  $$Y_{it} = \beta_{0} + \beta_{1}X_{it} + \delta_{2}B2_{it} + \ldots \delta_{T}BT_{it} + u_{it}$$
+
+  - Create binary variables $B2, ..., BT$
+  - $B2 = 1$ if $t = \text{year \#2}$, $= 0$ otherwise
+  - Regress $Y$ on $X, B2, ..., BT$ using OLS
+  - Ignoring B1 in case of multicollinearity.
+
+2. **"Year-demeaned" OLS regression**
+- Deviate $Y_{it}$, $X_{it}$ from year (not state) averages
+- Estimate by OLS using “year-demeaned” data
+
+Estimation with both entity and time fixed effects:
+$$
+Y_{it} = \beta_1 X_{it} + \alpha_i + \lambda_t + u_{it}
+$$
+
+- When $T = 2$, computing the first difference and including an intercept is <u>equivalent</u> to (gives exactly the same regression as) including entity and time fixed effects.
+
+  *差分法和固定效应法（引入虚拟变量）的回归结果是一样的。*
+
+  *差分法只能消除实体固定效应，如果时间固定效应存在，需要引入时间差分变量。*
+
+- When $T > 2$, there are various equivalent ways to incorporate both entity and time fixed effects:
+
+  - entity demeaning & $T - 1$ time indicators
+
+  - time demeaning & $n - 1$ entity indicators
+
+  - $T - 1$ time indicators & $n - 1$ entity indicators
+
+  - entity & time demeaning
+
+### 6.5 The Fixed Effects Regression Assumptions and Standard Errors
+
+#### 6.5.1 Assumptions
+
+Assumption #1: $E(u_{it} | X_{i1}, ..., X_{iT}, \alpha_i) = 0$
+- $u_{it}$ has mean zero, given the entity fixed effect and the entire history of the $X$'s for that entity
+
+- This is an extension of the previous multiple regression Assumption #1
+
+- This means there are no omitted lagged (滞后的，指$t$期之前的变量对$u_t$有影响) effects (any lagged effects of $X$ must enter explicitly)
+
+- Also, there is no feedback from $u$ to future $X$.
+
+  *因为这个条件期望将所有时间的X都包含了进来，所以就控制了过去和未来的X对u的影响，确保二者之间没有因果关系。*
+
+Assumption #2: $(X_{i1},...,X_{iT},u_{i1},...,u_{iT}),$  $i=1,...,n,$ are i.i.d. draws from their joint distribution.  
+
+- This is an extension of Assumption #2 for multiple regression  with cross-section data.
+- This is satisfied if entities are randomly sampled from their population by simple random sampling.  
+- This does not require observations to be i.i.d. over time for the same entity – that would be unrealistic.
+
+Assumption #3 and #4:
+
+- Large outliers are unlikely: $(X_{it}, u_{it})$ have finite fourth moments. 
+- There is no perfect multicollinearity (multiple X ’s).
+
+#### 6.5.2 Autocorrelation (serial correlation)
+
+Suppose a variable $Z$ is observed at different dates $t$, so observations are on $Z_t$, $t=1,\ldots,T$. Then $Z_t$ is said to be autocorrelated or serially correlated if $\text{corr}(Z_t, Z_{t+j})\neq 0$ for some dates $j\neq 0$.
+- "Autocorrelation" means correlation with itself.
+- $\text{cov}(Z_t, Z_{t+j})$ is called the $j^{th}$ autocovariance of $Z_t$.
+
+In the drunk driving example, $u_{it}$ includes the omitted variable of annual weather conditions for state $i$. If snowy winters come in clusters (one follows another) then $u_{it}$ will be autocorrelated.
+
+In many panel data applications, $u_{it}$ is plausibly autocorrelated.
+
+#### 6.5.3 Clustered Standard Error
+
+The usual OLS standard errors will in general be wrong because they assume that $u_{it}$ is serially uncorrelated. This problem is solved by using clustered standard errors.
+
+*一个简单的例子说明CSE的思想*
+
+Clustered SEs for the mean estimated using panel data: 
+
+$$Y_{it} = \mu + u_{it}, i = 1, \ldots, n, t = 1, \ldots, T$$
+
+The estimator of $\mu$ mean is $\bar{Y} = \frac{1}{nT} \sum_{i=1}^{n} \sum_{t=1}^{T} Y_{it}$.
+
+It is useful to write $\bar{Y}$ as the average across entities of the mean value for each entity:
+$$
+\bar{Y} = \frac{1}{nT} \sum_{i=1}^{n} \sum_{t=1}^{T} Y_{it} = \frac{1}{n} \sum_{i=1}^{n} \left( \frac{1}{T} \sum_{t=1}^{T} Y_{it} \right) = \frac{1}{n} \sum_{i=1}^{n} \bar{Y}_{i}
+$$
+where $\bar{Y}_{i} = \frac{1}{T} \sum_{t=1}^{T} Y_{it}$ is the sample mean for entity $i$.
+
+Because observations are i.i.d. across entities, $(\bar{Y}_1, ..., \bar{Y}_n)$ are i.i.d.
+
+Thus, $$\bar{Y} = \frac{1}{n} \sum_{i=1}^{n} \bar{Y}_i \xrightarrow{d} N(0, \sigma_{\bar{Y}_i}^2 / n), \text{where } \sigma_{\bar{Y}_i}^2 = \text{var}(\bar{Y}_i).$$
+
+- The $SE$ of $\bar{Y}$ is the square root of an estimator of $\sigma_{\bar{Y}_i}^2 / n$.
+- The natural estimator of $\sigma_{\bar{Y}_i}^2$ is the sample variance of $\bar{Y}_i$, $s_{\bar{Y}_i}^2$. This delivers the clustered standard error formula for $\bar{Y}$ computed using panel data:
+  $$
+  \text{Clustered } SE \text{ of } \bar{Y} = \sqrt{\frac{s_{\bar{Y}_i}^2}{n}}, \text{where } s_{\bar{Y}_i}^2 = \frac{1}{n-1} \sum_{i=1}^{n} (\bar{Y}_i - \bar{Y})^2
+  $$
+
+The previous derivation is the same as was used in Ch. 3 to derive the SE of the sample average, except that here the “data” are the i.i.d. entity averages instead of a single i.i.d. observation for each entity.
